@@ -128,50 +128,47 @@ public class Jogo {
                 }
 
                 else{
-                    if(origemX < destinoX){
-                        if(origem.inimigoDiagonalD(tabuleiro) != null){  
-                            Casa diagonal = origem.inimigoDiagonalD(tabuleiro);
-                            if(!destino.possuiPeca()){
-                                peca.mover(destino);
-                                diagonal.removerPeca();
-
-                            }
-                            if (destinoY == 7 || destinoY == 0) {
+                    if(origemX < destinoX){ /** Capturando para a direita */
+                        Casa diagonal = origem.inimigoDiagonalD(tabuleiro,origemY,destinoY);
+                        if(diagonal != null){
+                            peca.mover(destino);
+                            diagonal.removerPeca();
+                            if (destinoY == 7 || destinoY == 0) { 
                                 peca.setTipo();
                             }
-                            if(destino.podeComer(tabuleiro)){                                    
+                            if(destino.podeComer(tabuleiro) != null){ /** Se após capturar, uma peça pode continuar capturando */
                                 comendo = destino;
                             }
                             else{
                                 comendo = null;
-                                turno = turno*(-1);
+                                turno = turno*(-1); 
                             }
+
                         }
                     }
-                    else if(origemX > destinoX){
-
-                        if(origem.inimigoDiagonalE(tabuleiro) != null){  
-                            Casa diagonal = origem.inimigoDiagonalE(tabuleiro);
-                            if(!destino.possuiPeca()){
-                                peca.mover(destino);
-                                diagonal.removerPeca();                                
-                            }
-                            if (destinoY == 7 || destinoY == 0) {
+                    else if(origemX > destinoX){ /** Capturando para a esquerda */
+                        Casa diagonal = origem.inimigoDiagonalE(tabuleiro,origemY,destinoY);
+                        if(diagonal != null){
+                            peca.mover(destino);
+                            diagonal.removerPeca();
+                            if (destinoY == 7 || destinoY == 0) { 
                                 peca.setTipo();
                             }
-                            if(destino.podeComer(tabuleiro)){                                    
+                            if(destino.podeComer(tabuleiro) != null){
                                 comendo = destino;
                             }
-                            else{                                    
+                            else{
                                 comendo = null;
-                                turno = turno*(-1);
+                                turno = turno*(-1); 
                             }
-                        }
+                            
 
+                        }
                     }
                 }
             }
         }
+        
     }
 
     /**
@@ -199,17 +196,23 @@ public class Jogo {
         if((Math.abs(deslocaX) != Math.abs(deslocaY)) || Math.abs(deslocaX) > 2 || deslocaX == 0) { /** Testes básicos para verificar a validade do movimento */
             return false;
         }
+        if(Math.abs(deslocaX) == 1){
+            if((peca.getTipo() == 0) ||(peca.getTipo() == 3)){ /** Se a peça for uma pedra branca ou dama vermelha */
 
-        if((peca.getTipo() == 0) ||(peca.getTipo() == 3)){ /** Se a peça for uma pedra branca ou dama vermelha */
+                if(!(destino.possuiPeca()) && (origemY < destinoY)){ /** Se o destino não possuir peça e a peça estiver "subindo" */
+                    return true;
+                }
+            }
 
-            if(!(destino.possuiPeca()) && (origemY < destinoY)){ /** Se o destino não possuir peça e a peça estiver "subindo" */
-                return true;
+            else if((peca.getTipo() == 2) || (peca.getTipo() == 1)){ /** Se a peça for uma pedra vermelha ou dama branca */
+
+                if(!destino.possuiPeca() && (origemY > destinoY)){ /** Se o destino não possuir peça e a peça estiver "descendo" */
+                    return true;
+                }
             }
         }
-
-        else if((peca.getTipo() == 2) || (peca.getTipo() == 1)){ /** Se a peça for uma pedra vermelha ou dama branca */
-
-            if(!destino.possuiPeca() && (origemY > destinoY)){ /** Se o destino não possuir peça e a peça estiver "descendo" */
+        else{
+            if(!destino.possuiPeca()){ /** Caso em que a peca se move em dois e a casa de destino está vazia */
                 return true;
             }
         }

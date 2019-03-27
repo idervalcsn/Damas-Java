@@ -49,22 +49,24 @@ public class Casa {
     }
 
     /**
-     * Identifica se a casa à diagonal esquerda é de um adversário.
+     * Identifica se a casa entre o destino (á esquerda) e a origem é capturável.
      * @param tabuleiro tabuleiro no qual o jogo está sendo jogado.
+     * @param origemY linha em que a casa começa
+     * @param destinoY linha em que a casa termina
      * @return Casa diagonal esquerda, caso possua uma peça inimiga, null em todos os outros casos.
      */
-    public Casa inimigoDiagonalE(Tabuleiro tabuleiro){
-
+    public Casa inimigoDiagonalE(Tabuleiro tabuleiro, int origemY, int destinoY){
         int player = peca.getPlayer();
-        if(x == 0){/** quando x é igual a 0, estamos na borda esquerda do tabuleiro. Logo, não existe diagonal á esquerda */
+        if(x <= 1){ /** quando x é menor ou igual 1, é impossível uma peça comer na direção esquerda */
             return null;
         }
 
-        if((peca.getTipo() == 0) ||peca.getTipo() == 3){ /** Casos em que temos peça branca ou dama vermelha. Ambas possuem o mesmo movimento, então as diagonais a serem checadas são na mesma direção.  */
+        if(origemY < destinoY){ 
             Casa diagonal = tabuleiro.getCasa(x - 1, y + 1);
+            Casa aposdiagonal = tabuleiro.getCasa(x - 2, y + 2);
             Peca pecad = diagonal.getPeca();
             if(pecad != null){
-                if(pecad.getPlayer() != player){ /** Checando que as peças são inimigas */
+                if(pecad.getPlayer() != player && !aposdiagonal.possuiPeca()){ /** Checando que as peças são inimigas e o destino está vazio */
                     return diagonal;
                 }
                 else{
@@ -76,11 +78,13 @@ public class Casa {
 
             }
         } 
-        else {  /** Casos em que temos peça vermelha ou dama branca. Ambas possuem o mesmo movimento, então as diagonais a serem checadas são na mesma direção.  */
+
+        else if(origemY > destinoY){ /** */
             Casa diagonal = tabuleiro.getCasa(x - 1, y - 1);
+            Casa aposdiagonal = tabuleiro.getCasa(x - 2, y - 2);
             Peca pecad = diagonal.getPeca();
             if(pecad != null){
-                if(pecad.getPlayer() != player){ /** Checando que as peças são inimigas */
+                if(pecad.getPlayer() != player && !aposdiagonal.possuiPeca()){ 
                     return diagonal;
                 }
                 else{
@@ -91,26 +95,33 @@ public class Casa {
                 return null;
 
             }
-        } 
+
+        }
+        else{
+            return null;
+        }
 
     }
 
     /**
-     * Identifica se a casa à diagonal direita é de um adversário.
+     * Identifica se a casa entre o destino (à direita) e a origem é capturável.
      * @param tabuleiro tabuleiro no qual o jogo está sendo jogado.
+     * @param origemY linha em que a casa começa
+     * @param destinoY linha em que a casa termina
      * @return Casa diagonal direita, caso possua uma peça inimiga, null em todos os outros casos.
      */
-    public Casa inimigoDiagonalD(Tabuleiro tabuleiro){
+    public Casa inimigoDiagonalD(Tabuleiro tabuleiro, int origemY, int destinoY){
         int player = peca.getPlayer();
-        if(x == 7){ /** quando x é igual a 7, estamos na borda direita do tabuleiro. Logo, não existe diagonal á esquerda */
+        if(x >= 6){ /** quando x é maior ou igual a 6, é impossível comer na direção direita*/
             return null;
         }
 
-        if((peca.getTipo() == 0) ||peca.getTipo() == 3){ /** Casos em que temos peça branca ou dama vermelha. Ambas possuem o mesmo movimento, então as diagonais a serem checadas são na mesma direção.  */
+        if(origemY < destinoY){
             Casa diagonal = tabuleiro.getCasa(x + 1, y + 1);
+            Casa aposdiagonal = tabuleiro.getCasa(x + 2, y + 2);
             Peca pecad = diagonal.getPeca();
             if(pecad != null){
-                if(pecad.getPlayer() != player){ /** Checando que as peças são inimigas */
+                if(pecad.getPlayer() != player && !aposdiagonal.possuiPeca()){ /** Checando que as peças são inimigas e o destino está vazio */
                     return diagonal;
                 }
                 else{
@@ -122,11 +133,13 @@ public class Casa {
 
             }
         } 
-        else { /** Casos em que temos peça vermelha ou dama branca. Ambas possuem o mesmo movimento, então as diagonais a serem checadas são na mesma direção.  */
+
+        else if(origemY > destinoY){ /** */
             Casa diagonal = tabuleiro.getCasa(x + 1, y - 1);
+            Casa aposdiagonal = tabuleiro.getCasa(x + 2, y - 2);
             Peca pecad = diagonal.getPeca();
             if(pecad != null){
-                if(pecad.getPlayer() != player){ /** Checando que as peças são inimigas */
+                if(pecad.getPlayer() != player && !aposdiagonal.possuiPeca()){ 
                     return diagonal;
                 }
                 else{
@@ -137,60 +150,49 @@ public class Casa {
                 return null;
 
             }
-        } 
+        }
+        else{
+            return null;
+        }
 
     }
 
     /**Verifica se a peça em uma casa pode "comer" outra peça.
      * @param tabuleiro tabuleiro em que o jogo está sendo jogado
-     * @return "true" se a peça pode comer, "false" caso contrário
+     * @return a casa em que a peça se encontra se a ela pode comer, null caso contrário
      */
-    public boolean podeComer(Tabuleiro tabuleiro){
-
-        if((this.inimigoDiagonalD(tabuleiro) == null && (this.inimigoDiagonalE(tabuleiro) == null))){ /** Caso a peça não possua nenhum inimigo nas diagonais, obviamente não terá nada pra comer */
-            return false;
-        }
-        if(peca.getTipo() == 0 || peca.getTipo() == 3){ 
-            if(this.inimigoDiagonalD(tabuleiro) != null && !(y >= 6 || y <= 1))  { /** Checando se a diagonal direita pode ser comida E que não está na borda do tabuleiro */
-                Casa fim = tabuleiro.getCasa(x+2,y+2);
-                if(!fim.possuiPeca()){
-                    return true;
+    public Casa podeComer(Tabuleiro tabuleiro){
+        int inferior = y - 2;
+        int superior = y + 2;	
+        int[] y_possiveis = {superior, inferior};
+        if(!(y>=6 || y<=1)){
+            for(int i : y_possiveis){
+                if(this.inimigoDiagonalE(tabuleiro,y,i) != null || this.inimigoDiagonalD(tabuleiro,y,i) != null){
+                    return this;
                 }
                 
-            }
 
-             if(this.inimigoDiagonalE(tabuleiro) != null && !(y >= 6 || y <= 1))  {
-                Casa fim = tabuleiro.getCasa(x-2,y+2);
-                if(!fim.possuiPeca()){
-                    return true;
-                }
-                else{
-                    return false;
-                }
             }
         }
 
-        else if(peca.getTipo() == 1 || peca.getTipo() == 2){
-            if(this.inimigoDiagonalD(tabuleiro) != null && !(y >= 6 || y <= 1))  {
-                Casa fim = tabuleiro.getCasa(x+2,y-2);
-                if(!fim.possuiPeca()){
-                    return true;
-                }
-                
-            }
+        else if(y>=6) {
 
-            if(this.inimigoDiagonalE(tabuleiro) != null && !(y >= 6 || y <= 1))  {
-                Casa fim = tabuleiro.getCasa(x-2,y-2);
-                if(!fim.possuiPeca()){
-                    return true;
-                }
-                else{
-                    return false;
-                }
+            if(this.inimigoDiagonalE(tabuleiro,y,inferior) != null || this.inimigoDiagonalD(tabuleiro,y,inferior) != null ){
+                return this;
             }
+            
+
         }
 
-        return false;
+        else {
 
+            if(this.inimigoDiagonalE(tabuleiro,y,superior) != null || this.inimigoDiagonalD(tabuleiro,y,superior) != null){
+                return this;
+            }
+            
+
+        }
+        
+        return null;
     }
 }
