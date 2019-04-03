@@ -1,4 +1,4 @@
-
+import java.util.ArrayList;
 /**
  * Representa uma Pe�a do jogo.
  * Possui uma casa e um tipo associado.
@@ -16,11 +16,16 @@ public class Peca {
 
     private Casa casa;
     private int tipo;
+    private int x;
+    private int y;
 
     public Peca(Casa casa, int tipo) {
         this.casa = casa;
         this.tipo = tipo;
+        this.x = casa.getX();
+        this.y = casa.getY();
         casa.colocarPeca(this);
+        
     }
 
     /**
@@ -31,6 +36,8 @@ public class Peca {
         casa.removerPeca();
         destino.colocarPeca(this);
         casa = destino;
+        this.x = casa.getX();
+        this.y = casa.getY();
     }
 
     /**
@@ -80,6 +87,68 @@ public class Peca {
         }
     }
 
-    
+    public ArrayList<Casa> capturasPossiveis(Tabuleiro tabuleiro){
+        ArrayList<Casa> capturas = new ArrayList<Casa>();
+        
+        if((x >= 2 && x<=5)){ //Não está nas bordas
+                if((y>=2 && y <=5)){
+                capturas.add(tabuleiro.getCasa(x+2,y+2));
+                capturas.add(tabuleiro.getCasa(x+2,y-2));
+                capturas.add(tabuleiro.getCasa(x-2,y+2));
+                capturas.add(tabuleiro.getCasa(x-2,y-2));
+                }
+                else if(y < 2){
+                capturas.add(tabuleiro.getCasa(x+2,y+2));                
+                capturas.add(tabuleiro.getCasa(x-2,y+2));
+                    
+                }
+                else{
+                capturas.add(tabuleiro.getCasa(x+2,y-2));                
+                capturas.add(tabuleiro.getCasa(x-2,y-2));
+                }
+        }
+        else if(x < 2){
+                if(y>=2 && y<=5){
+                    capturas.add(tabuleiro.getCasa(x+2,y+2));
+                    capturas.add(tabuleiro.getCasa(x+2,y-2));
+                }
+                else if(y < 2){
+                    capturas.add(tabuleiro.getCasa(x+2,y+2));
+                }
+                else {
+                    capturas.add(tabuleiro.getCasa(x+2,y-2));
+                }
+        }
+        else{ //Borda direita
+            if(y>=2 && y<=5){
+                    capturas.add(tabuleiro.getCasa(x-2,y+2));
+                    capturas.add(tabuleiro.getCasa(x-2,y-2));
+                }
+                else if(y < 2){
+                    capturas.add(tabuleiro.getCasa(x-2,y+2));
+                }
+                else {
+                    capturas.add(tabuleiro.getCasa(x-2,y-2));
+                }
+        }
+        
+        for(int i = 0; i < capturas.size(); i++){ //Removendo capturas inválidas
+            Casa fim = capturas.get(i);
+            int fimx = fim.getX();
+            int fimy = fim.getY();            
+            Casa meio = casa.meio(tabuleiro,fimx,fimy);
+            Peca central = meio.getPeca();
+            
+            if(fim.possuiPeca() || central == null){
+                capturas.remove(i);                
+            }
+            else if(central.getPlayer() == this.getPlayer()){
+                capturas.remove(i);
+            }
+            
+        }
+        
+        return capturas;
+    }
     
 }

@@ -18,7 +18,15 @@ public class Casa {
         this.y = y;
         this.peca = null;
     }
-
+    
+    public int getX(){
+        return x;
+    }
+    
+    public int getY(){
+        return y;
+    }
+    
     /**
      * Coloca uma peca nessa casa.
      * @param peca a Pe�a a ser posicionada nesta Casa.
@@ -47,7 +55,20 @@ public class Casa {
     public boolean possuiPeca() {
         return peca != null;
     }
-
+    
+    public Casa meio(Tabuleiro tabuleiro,int destinox, int destinoy){
+        int deslocax = destinox - x;
+        int deslocay = destinoy - y;
+        if(!(Math.abs(deslocax) == 2)){
+            return null;
+        }
+        else{
+            Casa meio = tabuleiro.getCasa(x+(deslocax/2),y+(deslocay/2)); //Deslocax/2 = Caso deslocax for positivo, teremos x1+1, positivo. Caso conrário x1-1, negativo.
+            return meio;
+        }
+        
+        
+    }
     /**
      * Identifica se a casa entre o destino (á esquerda) e a origem é capturável.
      * @param tabuleiro tabuleiro no qual o jogo está sendo jogado.
@@ -163,7 +184,7 @@ public class Casa {
      */
     public Casa podeComer(Tabuleiro tabuleiro){
         int inferior = y - 2;
-        int superior = y + 2;	
+        int superior = y + 2;   
         int[] y_possiveis = {superior, inferior};
         if(!(y>=6 || y<=1)){
             for(int i : y_possiveis){

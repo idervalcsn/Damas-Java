@@ -128,43 +128,12 @@ public class Jogo {
                 }
 
                 else{
-                    if(origemX < destinoX){ /** Capturando para a direita */
-                        Casa diagonal = origem.inimigoDiagonalD(tabuleiro,origemY,destinoY);
-                        if(diagonal != null){
-                            peca.mover(destino);
-                            diagonal.removerPeca();
-                            if (destinoY == 7 || destinoY == 0) { 
-                                peca.setTipo();
-                            }
-                            if(destino.podeComer(tabuleiro) != null){ /** Se após capturar, uma peça pode continuar capturando */
-                                comendo = destino;
-                            }
-                            else{
-                                comendo = null;
-                                turno = turno*(-1); 
-                            }
-
-                        }
+                    Casa meio = origem.meio(tabuleiro, destinoX, destinoY);
+                    if(peca.capturasPossiveis(tabuleiro).contains(destino)){
+                        peca.mover(destino);
+                        meio.removerPeca();
                     }
-                    else if(origemX > destinoX){ /** Capturando para a esquerda */
-                        Casa diagonal = origem.inimigoDiagonalE(tabuleiro,origemY,destinoY);
-                        if(diagonal != null){
-                            peca.mover(destino);
-                            diagonal.removerPeca();
-                            if (destinoY == 7 || destinoY == 0) { 
-                                peca.setTipo();
-                            }
-                            if(destino.podeComer(tabuleiro) != null){
-                                comendo = destino;
-                            }
-                            else{
-                                comendo = null;
-                                turno = turno*(-1); 
-                            }
-                            
-
-                        }
-                    }
+                    
                 }
             }
         }
