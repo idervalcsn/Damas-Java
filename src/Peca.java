@@ -25,7 +25,7 @@ public class Peca {
         this.x = casa.getX();
         this.y = casa.getY();
         casa.colocarPeca(this);
-        
+
     }
 
     /**
@@ -38,6 +38,9 @@ public class Peca {
         casa = destino;
         this.x = casa.getX();
         this.y = casa.getY();
+        if(destino.getY() == 7 || destino.getY() == 0){
+            setTipo();
+        }
     }
 
     /**
@@ -87,68 +90,119 @@ public class Peca {
         }
     }
 
+    /**
+     * Checa se o movimento que a peça está tentnado executar é para uma diagonal válida.
+     * @param origemX linha da casa de origem
+     * @param destinoX coluna da casa de origem
+     * @param destinoX linha da casa de destino
+     * @param destinoY coluna da casa de destino
+     * @return true se é uma diagonal válida, false caso contrário.
+     */
+    public boolean ehDiagonalValida(Tabuleiro tabuleiro, Casa destino){
+        int destinoX = destino.getX();
+        int destinoY = destino.getY();           
+        int deslocaX = destinoX - x;
+        int deslocaY = destinoY - y;
+        
+        if((Math.abs(deslocaX) != Math.abs(deslocaY)) || Math.abs(deslocaX) > 2 || deslocaX == 0) { /** Testes básicos para verificar a validade do movimento */
+            return false;
+        }
+        if(Math.abs(deslocaX) == 1){
+            if(tipo == 0 ||tipo == 3){ /** Se a peça for uma pedra branca ou dama vermelha */
+
+                if(!destino.possuiPeca() && (y < destinoY)){ /** Se o destino não possuir peça e a peça estiver "subindo" */
+                    return true;
+                }
+            }
+
+            else if(tipo == 2 || tipo == 1){ /** Se a peça for uma pedra vermelha ou dama branca */
+
+                if(!destino.possuiPeca() && (y > destinoY)){ /** Se o destino não possuir peça e a peça estiver "descendo" */
+                    return true;
+                }
+            }
+        }
+        else{
+            if(!destino.possuiPeca()){ /** Caso em que a peca se move em dois e a casa de destino está vazia */
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+
     public ArrayList<Casa> capturasPossiveis(Tabuleiro tabuleiro){
         ArrayList<Casa> capturas = new ArrayList<Casa>();
-        
+
         if((x >= 2 && x<=5)){ //Não está nas bordas
-                if((y>=2 && y <=5)){
+            if((y>=2 && y <=5)){
                 capturas.add(tabuleiro.getCasa(x+2,y+2));
                 capturas.add(tabuleiro.getCasa(x+2,y-2));
                 capturas.add(tabuleiro.getCasa(x-2,y+2));
                 capturas.add(tabuleiro.getCasa(x-2,y-2));
-                }
-                else if(y < 2){
+            }
+            else if(y < 2){
                 capturas.add(tabuleiro.getCasa(x+2,y+2));                
                 capturas.add(tabuleiro.getCasa(x-2,y+2));
-                    
-                }
-                else{
+
+            }
+            else{
                 capturas.add(tabuleiro.getCasa(x+2,y-2));                
                 capturas.add(tabuleiro.getCasa(x-2,y-2));
-                }
+            }
         }
         else if(x < 2){
-                if(y>=2 && y<=5){
-                    capturas.add(tabuleiro.getCasa(x+2,y+2));
-                    capturas.add(tabuleiro.getCasa(x+2,y-2));
-                }
-                else if(y < 2){
-                    capturas.add(tabuleiro.getCasa(x+2,y+2));
-                }
-                else {
-                    capturas.add(tabuleiro.getCasa(x+2,y-2));
-                }
+            if(y>=2 && y<=5){
+                capturas.add(tabuleiro.getCasa(x+2,y+2));
+                capturas.add(tabuleiro.getCasa(x+2,y-2));
+            }
+            else if(y < 2){
+                capturas.add(tabuleiro.getCasa(x+2,y+2));
+            }
+            else {
+                capturas.add(tabuleiro.getCasa(x+2,y-2));
+            }
         }
         else{ //Borda direita
             if(y>=2 && y<=5){
-                    capturas.add(tabuleiro.getCasa(x-2,y+2));
-                    capturas.add(tabuleiro.getCasa(x-2,y-2));
-                }
-                else if(y < 2){
-                    capturas.add(tabuleiro.getCasa(x-2,y+2));
-                }
-                else {
-                    capturas.add(tabuleiro.getCasa(x-2,y-2));
-                }
+                capturas.add(tabuleiro.getCasa(x-2,y+2));
+                capturas.add(tabuleiro.getCasa(x-2,y-2));
+            }
+            else if(y < 2){
+                capturas.add(tabuleiro.getCasa(x-2,y+2));
+            }
+            else {
+                capturas.add(tabuleiro.getCasa(x-2,y-2));
+            }
         }
-        
-        for(int i = 0; i < capturas.size(); i++){ //Removendo capturas inválidas
+
+        for(int i = capturas.size()-1; i >= 0; i--){ //Removendo capturas inválidas
             Casa fim = capturas.get(i);
             int fimx = fim.getX();
             int fimy = fim.getY();            
             Casa meio = casa.meio(tabuleiro,fimx,fimy);
             Peca central = meio.getPeca();
-            
+
             if(fim.possuiPeca() || central == null){
                 capturas.remove(i);                
             }
             else if(central.getPlayer() == this.getPlayer()){
                 capturas.remove(i);
             }
-            
+
         }
-        
+
         return capturas;
     }
-    
+
+    public boolean podeComer(Tabuleiro tabuleiro){
+        if(this.capturasPossiveis(tabuleiro).isEmpty()){
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+
 }
