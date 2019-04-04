@@ -18,15 +18,21 @@ public class Casa {
         this.y = y;
         this.peca = null;
     }
-    
+
+    /**      
+     * @return Valor x dessa casa.
+     */    
     public int getX(){
         return x;
     }
-    
+
+    /**      
+     * @return Valor y dessa casa.
+     */    
     public int getY(){
         return y;
     }
-    
+
     /**
      * Coloca uma peca nessa casa.
      * @param peca a Pe�a a ser posicionada nesta Casa.
@@ -55,22 +61,27 @@ public class Casa {
     public boolean possuiPeca() {
         return peca != null;
     }
-    
+
+    /**
+     * Identifica e retorna a casa presente entre duas casas.
+     * @param tabuleiro tabuleiro em que o jogo está sendo jogado.
+     * @param destinox valor x da segunda casa.
+     * @param destinox valor y da segunda casa.
+     * @return null caso a distância entre as duas casas não seja dois e retorna a casa quando a distância é dois.
+     */    
     public Casa meio(Tabuleiro tabuleiro,int destinox, int destinoy){
-        int deslocax = destinox - x;
+        int deslocax = destinox - x; 
         int deslocay = destinoy - y;
-        if(!(Math.abs(deslocax) == 2)){
+        if(!(Math.abs(deslocax) == 2)) {
             return null;
         }
         else{
-            Casa meio = tabuleiro.getCasa(x+(deslocax/2),y+(deslocay/2)); //Deslocax/2 = Caso deslocax for positivo, teremos x1+1, positivo. Caso conrário x1-1, negativo.
+            Casa meio = tabuleiro.getCasa(x+(deslocax/2),y+(deslocay/2)); //Deslocax/2 = Caso deslocax for positivo, teremos x1+1, positivo. Caso conrário x1-1, negativo. Da mesma forma para deslocay/2.
             return meio;
         }
-                
+
     }
-    
 
     
-
     
 }

@@ -1,3 +1,4 @@
+import javax.swing.JOptionPane;
 
 /**
  * Armazena o tabuleiro e responsavel por posicionar as pecas.
@@ -9,11 +10,11 @@
 public class Jogo {
 
     private Tabuleiro tabuleiro;
-    private int turno = 1; /** Em que 1 se refere ao jogador das peças brancas, e -1 ao das vermelhas. Todo jogo começa com as peças brancas.*/
-    Peca comendo = null; /** Verifica se alguma peça pode continuar comendo. */
+    private int turno = 1; // Em que 1 se refere ao jogador das peças brancas, e -1 ao das vermelhas. Todo jogo começa com as peças brancas.
+    Peca pecaComendo = null; // Verifica se alguma peça pode continuar pecaComendo. null significa que nenhuma pode.
     public Jogo() {
         tabuleiro = new Tabuleiro(); /** cria um tabuleiro de casas vazias */
-        criarPecas(); /** chama o método privado criarPecas() para popular o tabuleiro. */
+        criarPecas(); // chama o método privado criarPecas() para popular o tabuleiro. 
     }
 
     /**
@@ -21,6 +22,10 @@ public class Jogo {
      * Utilizado na inicializa�ao do jogo.
      */
     private void criarPecas() {
+        /** PEÇAS
+         * 
+         *  BRANCAS
+         */
         for(int y = 0; y < 3; y++ ){ 
             if(y !=1){ //Quando y é diferente de 1, x as casas pretas do jogador branco são pares em x.
                 for(int x = 0; x < 8; x++){ 
@@ -40,7 +45,12 @@ public class Jogo {
             }
 
         }
-        
+
+        /** PEÇAS
+         * 
+         *   VERMELHAS
+         */
+
         for(int y = 7; y > 4; y-- ){ 
             if(y !=6){ //Quando y é diferente de 6, as casas pretas do jogador vermelho são ímpares em x.
                 for(int x = 1; x < 8; x++){ 
@@ -75,36 +85,32 @@ public class Jogo {
         Casa origem = tabuleiro.getCasa(origemX, origemY);
         Casa destino = tabuleiro.getCasa(destinoX, destinoY);           
         Peca peca = origem.getPeca();        
-        int player = peca.getPlayer();        
+        int player = peca.getPlayer();// A que jogador pertence a peca a ser jogada. 1 se refere aos brancos e -1 aos vermelhos.     
 
-        if (player == turno  && (comendo == null || comendo == peca)){
+        if ( (player == turno  && pecaComendo == null || pecaComendo == peca)){ //Verifica que o turno é do jogador que está tentando mover a peça e se o jogo possui alguma peça que pode continuar comendo.
             if(peca.ehDiagonalValida(tabuleiro,destino)){
 
-                if(Math.abs(destinoX - origemX) == 1 && comendo == null){ /** Movimento de uma casa */                
+                if(pecaComendo == null && peca.tipoDeMovimento(destino) == 1){ //quando não há nenhuma peça que possa continuar comendo e o movimento não é captura.
                     peca.mover(destino);                    
-                    turno = turno*(-1);
-
+                    turno = turno*(-1); //troca turno
                 }
 
-                else{
-                    Casa meio = origem.meio(tabuleiro, destinoX, destinoY);
-                    if(peca.capturasPossiveis(tabuleiro).contains(destino)){
-                        peca.mover(destino);
-                        meio.removerPeca();
-                        if(peca.podeComer(tabuleiro)){
-                            comendo = peca;
-                        }
-                        else{
-                            turno = turno*(-1);
-                            comendo = null;
-                        }
+                else{ //movimento de captura
+                    peca.capturar(tabuleiro,destino);                    
+
+                    if(peca.podeComer(tabuleiro)){ //verifica se após a capura, a peça pode continuar comendo.
+                        pecaComendo = peca;
                     }
-
+                    else{
+                        turno = turno*(-1);
+                        pecaComendo = null;
+                    }
                 }
+
             }
         }
-
     }
+
 
     /**
      * @return o Tabuleiro em jogo.
@@ -112,7 +118,5 @@ public class Jogo {
     public Tabuleiro getTabuleiro() {
         return tabuleiro;
     }
-
-   
 
 }
