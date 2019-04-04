@@ -95,7 +95,7 @@ public class Jogo {
                     turno = turno*(-1); //troca turno
                 }
 
-                else{ //movimento de captura
+                else if(peca.tipoDeMovimento(destino) == 2){ //movimento de captura
                     peca.capturar(tabuleiro,destino);                    
 
                     if(peca.podeComer(tabuleiro)){ //verifica se após a capura, a peça pode continuar comendo.
