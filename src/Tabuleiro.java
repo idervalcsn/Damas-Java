@@ -28,4 +28,17 @@ public class Tabuleiro {
     public Casa getCasa(int x, int y) {
         return casas[x][y];
     }
+
+    public boolean algmPodeComer(int player){
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
+                Casa casa = getCasa(i, j);
+                if(casa.possuiPeca() && casa.getPeca().getPlayer() == player){
+                    if(casa.getPeca().podeComer(this)) return true;
+                }
+            }
+        }
+
+        return false;
+    }
 }

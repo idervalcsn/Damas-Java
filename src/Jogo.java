@@ -90,7 +90,7 @@ public class Jogo {
         if ( (player == turno  && pecaComendo == null || pecaComendo == peca)){ //Verifica que o turno é do jogador que está tentando mover a peça e se o jogo possui alguma peça que pode continuar comendo.
             if(peca.ehDiagonalValida(tabuleiro,destino)){
 
-                if(pecaComendo == null && peca.tipoDeMovimento(destino) == 1){ //quando não há nenhuma peça que possa continuar comendo e o movimento não é captura.
+                if(pecaComendo == null && peca.tipoDeMovimento(destino) == 1 && !(tabuleiro.algmPodeComer(turno))){ //quando não há nenhuma peça que possa continuar comendo e o movimento não é captura.
                     peca.mover(destino);                    
                     turno = turno*(-1); //troca turno
                 }
